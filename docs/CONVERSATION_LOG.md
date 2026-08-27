@@ -989,3 +989,5 @@ Save format: building maxWorkers/productionMode + pendingWorks persisted.
 **Follow-up (session 58, same day):** owner corrected the target - origin now https://github.com/kadirselcuk-cloud/Rational-Animal.git (the account this machine is authenticated as). Log commit + push of everything.
 
 **Follow-up (session 59, same day):** GitHub Pages deployment configured - .github/workflows/deploy.yml (build on every push to main: npm ci, npm run build, upload dist, actions/deploy-pages; configure-pages with enablement:true so Pages self-enables); vite base = /Rational-Animal/ under GITHUB_ACTIONS only (local dev/build unaffected); intro asset paths now use import.meta.env.BASE_URL; tsconfig gains vite/client types. Game URL: https://kadirselcuk-cloud.github.io/Rational-Animal/
+
+**Deployment verified:** the Actions workflow completed successfully and the game is LIVE at https://kadirselcuk-cloud.github.io/Rational-Animal/ (checked: HTTP 200). Every push to main now redeploys automatically.
