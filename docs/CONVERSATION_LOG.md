@@ -932,6 +932,35 @@ Save format: building maxWorkers/productionMode + pendingWorks persisted.
 
 ---
 
+## Sessions 46–47 wrap-up (2026-08-25 → 27) — consolidated record of owner instructions
+
+Owner asked for this consolidated record. Everything below is already reflected in GAME_VISION.md, CLAUDE.md, and SKILL_TREE.md; this is the one-place summary.
+
+**Standing instructions given this session:**
+1. **Build freeze** — implement NOTHING of the new direction until the owner explicitly says "OK to go". (CLAUDE.md + GAME_VISION.md §Planned Direction)
+2. **Direction** — convert the game into a **research & knowledge based game**: the tribe starts from nothing and discovers everything on the way. A tech tree will be built later; **SKILL_TREE.md is its approved foundation**.
+3. **Tone rule (permanent)** — all player-facing text is **humorous / black-humorous, almost insulting to the player**; the aim is not insult but the mirror: facing ancestral instincts = drifting from humanity's virtues toward the animal. Voice reference: the SKILL_TREE.md era intros. (GAME_VISION.md §Tone & Writing + CLAUDE.md)
+4. **Era naming workflow** — Claude offers ~20 humorous name candidates (names only, no explanations); the owner picks or coins the final name, then gives the story's angle; Claude writes the intro; the owner may hand-polish the text directly in the file afterwards.
+
+**What was produced (all in SKILL_TREE.md, no game code touched):**
+- The full skill tree: ~330 nodes, 11 branches, tiers T0–T6 with cross-branch prerequisites, ⭐ gateway techs, main-quest spine, and 6 conversion discussion points (node budget 80–150, discovery model KP/by-doing/hybrid, era gates, fit with existing 15 in-game techs, northern-climate emphasis).
+- Timeline later extended: T7–T8 as real tiers (era intros written, **skill nodes still unwritten**), T9–T11 first as epilogue titles, then **merged into a single Epilogue**.
+- **The complete era frame, all intros written and owner-approved:**
+  - T0 **Hello World!** — game intro; opens "Human is a rational animal, says Aristo. You are not there yet..."
+  - T1 **Bloody Roots** — ancestors' skills: hard, but nothing to be proud of; still wild.
+  - T2 **Domesticated** — you tamed yourself, not the animals; promoted "from ape to primate".
+  - T3 **Civilization!** — the "!" is sarcastic; mastery of fire/metal/stone vs. the first bronze sword.
+  - T4 **Iron Age, Golden Price** — coinage replacing barter made greed bottomless.
+  - T5 **Shepherds & Sheep** — people as property; religion as the fence inside the head; education rationed by lords & priests.
+  - T6 **The Kindling** — cannon ends castle walls (grow / kneel / be destroyed); kindled readers + the press; power shifts Church → Kings.
+  - T7 **Golden Age, Iron Price** — discovery ≠ civilized: slavery fuels the new world, cruelty pays, the age of empires; Marie Antoinette / French Revolution; science grows as religion shrinks.
+  - T8 **Full Metal Century** — engines + perfected ballistics; bloodiest era; the bronze bill paid in full (the Bomb); "Aristo, did you say something about rational?"
+  - **Epilogue: Are We There Yet, Aristo?** (Democracy & Cold War → Technology → AI, no skill nodes) — arms race ("memorized the recipe"), democracy vs. flock-with-paperwork, technology's real gains ("they might think twice"), techno-feudalism ("returned in a hoodie... They're scrolling."), the AI questions, and the closing hand-back to the player: "You tell me. You're the one driving."
+
+**Open work, in order:** ① owner's OK to go → ② T7/T8 skill nodes (steam, electricity, industry, flight...) if wanted → ③ prune ~330 nodes to a playable tech tree together (decide the discovery model) → ④ plan the conversion → ⑤ rewrite all in-game text in the tone.
+
+---
+
 ## Session 42 - 2026-08-27 (Owner batch: "Hello World!" chapter intro)
 
 **Owner instructions:** whenever the game starts, open the cavemen campfire image in a window titled "Hello World!"; the "rational animal" narration text (full text preserved in src/ui/Intro.ts) flows in while the Jessica voice-over plays (assets from Desktop/Kadir/Temp/RationalAnimal); it should feel like a new chapter in Baldur's Gate 2.
@@ -1003,3 +1032,58 @@ Save format: building maxWorkers/productionMode + pendingWorks persisted.
 **Owner instructions:** rename the project from Northreach to Rational Animal; in-game, give the town a random name - 200 town names in a data file, one picked at game start.
 
 **Implemented:** page/showcase titles, package name (rational-animal), HUD header, and the launcher (play-rational-animal.bat) all renamed - localStorage keys deliberately KEPT as northreach-* so existing saves and window layouts survive. New src/data/townNames.ts with exactly 200 unique medieval-English town names + randomTownName(); Village.townName drawn at founding, persisted in saves (data.town), shown in the HUD header and atop the Town information window. (Two PowerShell text-rewrite mishaps en route - showcase.html mojibake and a BOM in package.json - both caught and fixed; the no-PowerShell-rewrites rule stands re-learned.) Build passes; pushed - auto-deploys.
+
+---
+
+## Session 64 — 2026-08-28 (Roadmap v2: the phased campaign — "games inside the game")
+
+**Owner direction (recorded, NO code touched):** substantial changes ahead — the game becomes a **phased campaign** whose feel evolves from Banished/Settlers/Manor Lords into Total War as it progresses. The SKILL_TREE.md tiers are the phases: T0 tutorial-survival (forage/sticks/fire/first tools, ~3 years) → survival through T2 → T3 raids + unknown merchants → T4 gold/trade/diplomacy → T5 manor/soldiers/taxation → T6 castle/fortification → T7–T8 clean cut into grand strategy on an abstracted map (cities + armies, battles as troop rectangles with dropping numbers; T8 zooms out to world conquest) → Epilogue. Plus a **start screen**: surprised Aristo statue (funny face, open hands) center, 4 corner artworks (cavemen hunting / tribes hunting each other / Spanish vs Aztecs / WW1) — all PNGs to come from the owner.
+
+**Owner decisions (via Q&A, all recorded in ROADMAP.md):**
+1. Research loop: KP from villager actions; player picks research; completion popup pauses game, shows auto-picked recommended next research, button opens tech tree to change; info/KP/image popups everywhere.
+2. Tree pruned to ~120–150 nodes (workshop with owner).
+3. Era gate: **ALL techs of a tier must be completed** to advance → tiers must be curated small (12–17) with zero filler.
+4. Era intros: same "Hello World!" text + voice for every tier for now, header shows era name; owner supplies per-era assets later.
+5. Obsolescence: old buildings keep working but leave the build menu; vanished resources auto-convert.
+6. T6→T7 is a **clean cut** (settlement chapter ends; strategic map is a new game).
+7. Code: **evolve & gate** the existing sim; content redistributed across tiers.
+8. Pacing: grow with depth (T0–T1 ~2–3y, T2–T6 ~4–6y, T7–T8 objective-based; ~15–20 h campaign).
+9. Start screen: classic menu (New Game → Hello World intro → T0, Continue, Load, Settings later).
+
+**Delivered:** [ROADMAP.md](ROADMAP.md) fully rewritten as **Roadmap v2** — vision, the 9 decisions, tier-by-tier player arc table, implementation Phases A–K (A start screen/chapter shell, B tech-tree foundation, C gating engine + T0, D T1–T2, E T3 raids/merchants, F T4 money/diplomacy, G T5 manor/tax, H T6 castle, I T7 strategic layer, J T8 world, K epilogue/polish), cross-cutting rules, 7 open questions (tribes timeline, T7/T8 research, school role, year length, sandbox mode, old saves, PNG specs). v1 roadmap archived at the bottom as COMPLETE. GAME_VISION.md §Planned Direction updated; freeze now reads "until the owner explicitly approves Roadmap v2".
+
+**State at end of session:** docs only — no code changed. Roadmap v2 awaits owner review.
+
+**Next steps:**
+1. Owner reviews Roadmap v2 (esp. the 7 open questions + phase order).
+2. On approval → Phase A (start screen; placeholders until the owner's PNGs arrive) and the Phase B pruning workshop can start in parallel.
+
+**Addendum (same day) — all 7 open questions answered by the owner** (recorded as decisions 10–17 in ROADMAP.md):
+1. T3 raiders/merchants are **separate nameless factions** (bandits, wandering traders) — NOT the 4 tribes; tribes debut fresh in T4.
+2. **T7/T8 not built now; each gets its own separate tech tree** — per chapter: decide the tree together first, then gameplay decisions, then build. Phase B pruning covers T0–T6 only. Also: **next era's techs stay locked until the current era completes** (T0–T6).
+3. School becomes a **KP multiplier** on action-earned knowledge (later tier).
+4. **Year length stays 20 min** for T0–T6.
+5. **Campaign only** — no sandbox mode.
+6. **Old saves wiped** at Phase C; no migration.
+7. Phase A uses **placeholder art** until the owner's 5 PNGs arrive (statue transparent bg, ≥1024 px preferred).
+Phase F and Phases I/J descriptions updated to match. Roadmap v2 now has zero open questions — awaiting the owner's overall approval.
+
+---
+
+## Session 65 — 2026-08-28 (GO: Phase B begins — the tech tree, designed and explorable in-game)
+
+**Owner instruction:** Roadmap v2 approved — GO. Design the tech tree first; add a button in the game to open it; **double-click any tech to complete it as if played** (dev preview).
+
+**Delivered:**
+1. **The playable tree designed**: SKILL_TREE.md (~330 nodes) pruned to **125 nodes**, T0–T6, 10 branches — recorded in [TECH_TREE.md](TECH_TREE.md) (tier tables: name/branch/KP/prereqs/effect). Node counts 8/20/20/21/20/20/16; KP bands 5→420 (placeholder costs until action-KP exists). Every tier-mechanic from the roadmap has its gateway node (Passing Merchants T3, Coinage+Diplomacy T4, Manor+Taxation+Men-at-Arms T5, Castle+Star Forts+Musketry T6; Scientific Method closes the tree). Every node carries a **tone-rule flavor line** (drafted, reviewable in-game by hover).
+2. **`src/sim/techtree.ts`** — data (125 nodes: id, tier, branch, prereqs, KP, ⭐ flags, effect, flavor) + `TechTreeState`: current era = lowest unfinished tier (decision 3), later tiers locked (decision 12), `completeAsPlayed()` dev-completes a node plus all earlier tiers and its prereq chain; state persists in localStorage (`ra-techtree-v1`), separate from saves until Phase C.
+3. **`src/ui/TechTreeUI.ts`** — full-screen tree chart: tier columns with era names, branch rows, SVG prereq curves, drag-pan + wheel-zoom (cursor-anchored), hover **info card** (big emoji as placeholder image, era, branch, KP, status, effect, flavor, prereq checklist), states (researched gold / available green-glow / locked dim 🔒), T7/T8/Epilogue as locked plaques at the right edge, Reset (dev), Esc closes.
+4. **Wiring**: 🌳 menu button in the HUD; double-click completes (events-feed messages); completing a tier fires the **era chapter intro — same text & voice, new era header** (decision 4) with the game paused, resuming on close. `showIntro(title, onClose)` parameterized. Dev flag `?techtree=1` opens the tree directly (skips the chapter) for headless screenshots.
+5. The old 15-tech 📖 window still runs current gameplay — it retires in Phase C when unlock wiring moves to the new tree.
+
+**Verified:** `tsc` + `npm run build` pass; headless-Edge screenshot of `?techtree=1` shows the chart (T0 green, columns, curves, plaques). Live at http://localhost:5180.
+
+**Next steps:**
+1. Owner explores the tree in-game (🌳), reviews node picks & flavor lines (TECH_TREE.md for the tables).
+2. Phase B remainder: real research loop — action-KP earning, current-research selection, completion popup with auto-recommended next research (decision 1).
+3. Then Phase C: tier-gating engine + T0 start; merge tree state into saves.

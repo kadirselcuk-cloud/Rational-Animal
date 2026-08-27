@@ -19,10 +19,11 @@ A browser-based **strategy survival game** built with **three.js**, mimicking th
 - Reference text for the voice: the **T0 "Hello World!" introduction** in [SKILL_TREE.md](SKILL_TREE.md) ("Human is a rational animal, says Aristo. You are not there yet...").
 - Existing neutral in-game descriptions get rewritten in this voice when the research-game conversion is implemented — **not before the owner's go-ahead**.
 
-## Planned Direction (owner, 2026-08-25 — NOT yet approved for implementation)
+## Planned Direction (owner, 2026-08-25; expanded 2026-08-28 — NOT yet approved for implementation)
 - The owner intends to convert the game toward a **research & knowledge based game**: the tribe starts from nothing ("Hello World!" stage — little more than a group of animals) and discovers everything on the way.
-- [SKILL_TREE.md](SKILL_TREE.md) (tiers T0 "Hello World!" → T6 Renaissance & Discovery) is the approved foundation for the future tech tree.
-- **Standing freeze: do not build/implement any of this until the owner explicitly says it is OK to go.**
+- [SKILL_TREE.md](SKILL_TREE.md) (tiers T0 "Hello World!" → T8, + Epilogue) is the approved foundation for the future tech tree.
+- **2026-08-28 — the phased campaign ("games inside the game"):** the game becomes a tier-by-tier campaign whose *feel* evolves as it progresses — strategy survival & supply-chain management (Banished / Settlers / Manor Lords) through T0–T6, then a clean cut into grand strategy (Total War) for T7–T8, closing with the Epilogue. Full plan, tier arc, and the owner's recorded decisions (research loop, era gates, obsolescence, start screen with the surprised Aristo statue + 4 corner artworks, etc.): [ROADMAP.md](ROADMAP.md) (Roadmap v2, draft).
+- **Standing freeze: do not build/implement any of this until the owner explicitly approves Roadmap v2.**
 
 ## Art Direction
 - Buildings & roads use the **Kenney Fantasy Town Kit** (CC0, `public/models/fantasy-town/`) — owner-approved 2026-08-24, superseding the original all-in-code rule for those. Claude still builds remaining assets in-code (procedural low-poly) where no kit piece fits.

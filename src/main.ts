@@ -28,6 +28,7 @@ import { TradeSystem } from './sim/tribes';
 import { TribeRenderer } from './render/TribeRenderer';
 import { WarSystem } from './sim/war';
 import { WarRenderer } from './render/WarRenderer';
+import { TechTreeUI } from './ui/TechTreeUI';
 
 const container = document.getElementById('app')!;
 
@@ -89,8 +90,10 @@ let loadedFromSave = false;
 // The soundscape follows the calendar (owner rule, s54: wolves in winter,
 // drums and the primitive guitar in spring).
 gameMusic.bindSeason(() => calendar.season);
+// Dev/verification flag: ?techtree=1 skips the chapter and opens the tree.
+const devOpenTechTree = new URLSearchParams(location.search).has('techtree');
 // Fresh starts open the "Hello World!" chapter screen (owner rule, s42).
-if (!loadedFromSave) showIntro();
+if (!loadedFromSave && !devOpenTechTree) showIntro();
 // Loads skip the chapter, so the soundscape starts right away (the first
 // input wakes it if the browser held it back for want of a gesture).
 else {
@@ -174,6 +177,27 @@ hud.bindPanels({
   character: characterPanel,
   stats: new StatsPanel(village),
 });
+
+// The new tech tree (Roadmap v2 Phase B): 🌳 opens the full-screen chart;
+// double-click completes techs "as if played" (dev preview). Completing a
+// tier plays the era's chapter intro — same text & voice, new header (owner
+// decision 4) — with the game paused for the reading.
+const techTree = new TechTreeUI();
+techTree.onMessage = (text) => events.push(text);
+techTree.onEraAdvance = (_tier, eraName) => {
+  const prevSpeed = loop.speed > 0 ? loop.speed : 1;
+  loop.setSpeed(0);
+  showIntro(eraName, () => loop.setSpeed(prevSpeed));
+};
+{
+  const menu = document.getElementById('hud-menu')!;
+  const btn = document.createElement('button');
+  btn.textContent = '🌳';
+  btn.dataset.tip = 'Tech tree (new — in the works)';
+  btn.addEventListener('click', () => techTree.toggle());
+  menu.appendChild(btn);
+}
+if (devOpenTechTree) techTree.open();
 
 // Click a building (left click, no drag, not placing) to inspect it.
 {

@@ -96,7 +96,12 @@ class FireCrackle {
   }
 }
 
-export function showIntro(): void {
+/**
+ * Chapter screen. `title` defaults to the T0 chapter; era advances reuse the
+ * same screen, text and voice with only the header changed (owner decision,
+ * 2026-08-28 — per-era text/art/voice arrive later).
+ */
+export function showIntro(title = 'Hello World!', onClose?: () => void): void {
   // A proper old-book face for the chapter (falls back to Palatino offline).
   if (!document.getElementById('intro-font')) {
     const link = document.createElement('link');
@@ -194,7 +199,7 @@ export function showIntro(): void {
     'text-align:center;padding:calc(var(--u) * 9) calc(var(--u) * 12);color:#d8b872;' +
     `font-family:${FONT};font-size:calc(var(--u) * 19);letter-spacing:0.22em;` +
     'border-bottom:1px solid #4a3d24;background:#151009;';
-  bar.innerHTML = '<span style="color:#8a6d3b">❦&nbsp;&nbsp;</span>Hello World!<span style="color:#8a6d3b">&nbsp;&nbsp;❦</span>';
+  bar.innerHTML = `<span style="color:#8a6d3b">❦&nbsp;&nbsp;</span>${title}<span style="color:#8a6d3b">&nbsp;&nbsp;❦</span>`;
 
   // The picture with a LIVING fire.
   const stage = document.createElement('div');
@@ -372,6 +377,7 @@ export function showIntro(): void {
     // Owner rule (s49): the music belongs to the game, not the chapter —
     // spring begins once the book is closed.
     gameMusic.start();
+    onClose?.();
   };
   continueBtn.addEventListener('click', (e) => {
     e.stopPropagation();
