@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Northreach (working title)</title>
+    <style>
+      :root {
+        /* Owner rule (session 37): one menu = 10% of the player's window.
+           Every UI size derives from --u so menus AND text scale with the
+           viewport: 1u = 1px at the original 260px menu design width.
+           Clamped so tiny or huge screens stay readable. */
+        --menu-w: clamp(190px, 10vw, 460px);
+        --u: calc(var(--menu-w) / 260);
+      }
+      html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; background: #1a1d22; }
+      #app { position: fixed; inset: 0; }
+      #app canvas { display: block; }
+      #hud {
+        position: fixed; top: calc(var(--u) * 10); left: calc(var(--u) * 10); z-index: 10;
+        font-family: "Segoe UI", system-ui, sans-serif; font-size: calc(var(--u) * 13); color: #e8e4d8;
+        background: rgba(20, 24, 28, 0.75); border: 1px solid rgba(255,255,255,0.12);
+        border-radius: calc(var(--u) * 6); padding: calc(var(--u) * 8) calc(var(--u) * 12);
+        user-select: none; min-width: calc(var(--u) * 180);
+      }
+      #hud .row { display: flex; gap: calc(var(--u) * 6); align-items: center; margin-top: calc(var(--u) * 6); flex-wrap: wrap; }
+      #hud button {
+        font: inherit; color: #e8e4d8; background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.18); border-radius: calc(var(--u) * 4);
+        padding: calc(var(--u) * 2) calc(var(--u) * 10); cursor: pointer;
+      }
+      #hud button:hover { background: rgba(255,255,255,0.16); }
+      #hud button.active { background: #4a6741; border-color: #6d905f; }
+      #hud .hint { margin-top: calc(var(--u) * 6); color: #9aa08f; font-size: calc(var(--u) * 11); line-height: 1.5; }
+      #hud input {
+        font: inherit; color: #e8e4d8; background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.18); border-radius: calc(var(--u) * 4);
+        padding: calc(var(--u) * 2) calc(var(--u) * 6); width: calc(var(--u) * 110);
+      }
+      #techinfo {
+        position: fixed; right: calc(var(--u) * 10); bottom: calc(var(--u) * 240); z-index: 10;
+        font-family: "Segoe UI", system-ui, sans-serif; font-size: calc(var(--u) * 11); color: #9aa08f;
+        background: rgba(20, 24, 28, 0.7); border: 1px solid rgba(255,255,255,0.1);
+        border-radius: calc(var(--u) * 6); padding: calc(var(--u) * 6) calc(var(--u) * 9);
+        text-align: right; line-height: 1.7;
+      }
+      #techinfo input {
+        font: inherit; color: #c8c4b8; background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.15); border-radius: calc(var(--u) * 4);
+        padding: 1px calc(var(--u) * 5); width: calc(var(--u) * 90);
+      }
+      #techinfo button {
+        font: inherit; color: #c8c4b8; background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.15); border-radius: calc(var(--u) * 4);
+        padding: 1px calc(var(--u) * 6); cursor: pointer;
+      }
+      .ui-window {
+        position: fixed; z-index: 20;
+        font-family: "Segoe UI", system-ui, sans-serif; font-size: calc(var(--u) * 12); color: #e8e4d8;
+        background: rgba(20, 24, 28, 0.92); border: 1px solid rgba(255,255,255,0.18);
+        border-radius: calc(var(--u) * 7); box-shadow: 0 4px 18px rgba(0,0,0,0.5);
+      }
+      .ui-window-bar {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: calc(var(--u) * 6) calc(var(--u) * 10); font-weight: 600; cursor: grab; user-select: none;
+        background: rgba(255,255,255,0.06); border-radius: calc(var(--u) * 7) calc(var(--u) * 7) 0 0;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+      }
+      .ui-window-bar:active { cursor: grabbing; }
+      .ui-window-close {
+        font: inherit; color: #9aa08f; background: none; border: none;
+        cursor: pointer; padding: 0 calc(var(--u) * 2);
+      }
+      .ui-window-close:hover { color: #e8e4d8; }
+      .ui-window-body { padding: calc(var(--u) * 9) calc(var(--u) * 12); max-height: 60vh; overflow-y: auto; }
+      .ui-window-body hr { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: calc(var(--u) * 6) 0; }
+      .ui-window-body button {
+        font: inherit; color: #e8e4d8; background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.18); border-radius: calc(var(--u) * 4);
+        padding: calc(var(--u) * 2) calc(var(--u) * 10); cursor: pointer;
+      }
+      .ui-window-body button:hover:not(:disabled) { background: rgba(255,255,255,0.16); }
+      .ui-window-body button.active { background: #4a6741; border-color: #6d905f; }
+      .ui-window-body button:disabled { color: #777; cursor: default; }
+      .ui-window-body .row { display: flex; gap: calc(var(--u) * 6); align-items: center; margin-top: calc(var(--u) * 5); }
+      .info-row { display: flex; justify-content: space-between; gap: calc(var(--u) * 10); padding: calc(var(--u) * 3) 0; }
+      .work-note { color: #9aa08f; font-size: calc(var(--u) * 10); white-space: nowrap; }
+      .villager-link { cursor: pointer; border-radius: 3px; }
+      .villager-link:hover { background: rgba(255,255,255,0.08); }
+      .tab-bar { border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: calc(var(--u) * 6); margin-bottom: calc(var(--u) * 4); }
+      #place-hint {
+        position: fixed; left: 50%; bottom: calc(var(--u) * 60); transform: translateX(-50%); z-index: 15;
+        font-family: "Segoe UI", system-ui, sans-serif; font-size: calc(var(--u) * 13); color: #e8e4d8;
+        background: rgba(20, 24, 28, 0.9); border-radius: calc(var(--u) * 6); padding: calc(var(--u) * 6) calc(var(--u) * 14);
+        border: 1px solid rgba(255,255,255,0.2); pointer-events: none; white-space: nowrap;
+      }
+      #tooltip {
+        position: fixed; z-index: 100; max-width: var(--menu-w); pointer-events: none;
+        font-family: "Segoe UI", system-ui, sans-serif; font-size: calc(var(--u) * 12); color: #e8e4d8;
+        background: rgba(14, 17, 20, 0.95); border: 1px solid rgba(255,255,255,0.25);
+        border-radius: calc(var(--u) * 5); padding: calc(var(--u) * 5) calc(var(--u) * 9); line-height: 1.4;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+      }
+      #place-hint.ok { border-color: #6d905f; }
+      #place-hint.warn { border-color: #d8c25a; color: #d8c25a; }
+      #place-hint.bad { border-color: #d87a6a; color: #d87a6a; }
+      .tribe-box { padding: calc(var(--u) * 8) 0; border-top: 1px solid rgba(255,255,255,0.1); }
+      .tribe-box:first-of-type { border-top: none; }
+      .tribe-dot {
+        display: inline-block; width: calc(var(--u) * 10); height: calc(var(--u) * 10); border-radius: 50%;
+        margin-right: calc(var(--u) * 5); vertical-align: -1px;
+      }
+      .ui-window-body select {
+        font: inherit; color: #e8e4d8; background: #2a2f35;
+        border: 1px solid rgba(255,255,255,0.18); border-radius: calc(var(--u) * 4); padding: calc(var(--u) * 2) calc(var(--u) * 4);
+      }
+      .ui-window-body input[type="number"] {
+        font: inherit; color: #e8e4d8; background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.18); border-radius: calc(var(--u) * 4); padding: calc(var(--u) * 2) calc(var(--u) * 4);
+      }
+      .stat-ok { color: #8fc47f; }
+      .stat-warn { color: #d8c25a; }
+      .stat-bad { color: #d87a6a; }
+      .storage-label { margin-bottom: calc(var(--u) * 4); }
+      .storage-bar {
+        height: calc(var(--u) * 10); background: rgba(255,255,255,0.08); border-radius: calc(var(--u) * 5);
+        overflow: hidden; margin-bottom: calc(var(--u) * 8); border: 1px solid rgba(255,255,255,0.12);
+      }
+      .storage-fill { height: 100%; background: #6d905f; transition: width 0.3s; }
+      .storage-fill.fill-warn { background: #d8c25a; }
+      .storage-fill.fill-bad { background: #d87a6a; }
+      .build-entry {
+        display: flex; justify-content: space-between; align-items: center; gap: calc(var(--u) * 8);
+        padding: calc(var(--u) * 6) 0; border-top: 1px solid rgba(255,255,255,0.08); line-height: 1.35;
+      }
+      .build-entry:first-child { border-top: none; }
+      .build-info small { color: #9aa08f; }
+      .tech-head { font-weight: 600; margin-bottom: calc(var(--u) * 8); }
+      .tech {
+        display: flex; justify-content: space-between; align-items: center; gap: calc(var(--u) * 8);
+        padding: calc(var(--u) * 6) 0; border-top: 1px solid rgba(255,255,255,0.08); line-height: 1.35;
+      }
+      .tech-done { color: #8fc47f; }
+      .tech-lock { color: #9aa08f; font-size: calc(var(--u) * 11); }
+      #events {
+        position: fixed; left: calc(var(--u) * 10); bottom: calc(var(--u) * 10); z-index: 10;
+        font-family: "Segoe UI", system-ui, sans-serif; font-size: calc(var(--u) * 12);
+        display: flex; flex-direction: column; gap: calc(var(--u) * 4);
+        max-width: calc(var(--u) * 360);
+      }
+      #events .event {
+        color: #e8e4d8; background: rgba(20, 24, 28, 0.78);
+        border: 1px solid rgba(255,255,255,0.12); border-radius: calc(var(--u) * 5);
+        padding: calc(var(--u) * 3) calc(var(--u) * 9);
+      }
+      #events .events-header { color: #9aa08f; font-size: calc(var(--u) * 11); }
+      #events-list { display: flex; flex-direction: column; gap: calc(var(--u) * 3); }
+      #events-list.expanded {
+        max-height: 45vh; overflow-y: auto;
+        background: rgba(20, 24, 28, 0.85); border-radius: calc(var(--u) * 6); padding: calc(var(--u) * 6);
+      }
+      #minimap {
+        position: fixed; right: calc(var(--u) * 10); bottom: calc(var(--u) * 10); z-index: 10;
+        width: calc(var(--u) * 220); height: calc(var(--u) * 220); cursor: crosshair;
+        border: 1px solid rgba(255,255,255,0.25); border-radius: calc(var(--u) * 6);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.45);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="hud"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
