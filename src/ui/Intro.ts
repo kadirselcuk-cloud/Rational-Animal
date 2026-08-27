@@ -153,9 +153,12 @@ export function showIntro(): void {
       box-shadow: inset 0 0 calc(var(--u) * 8) rgba(216, 184, 114, 0.15);
       transition: box-shadow 0.25s, color 0.25s;
     }
-    .intro-btn:hover {
+    .intro-btn:hover:not(:disabled) {
       color: #f4dda2;
       box-shadow: inset 0 0 calc(var(--u) * 14) rgba(216, 184, 114, 0.35), 0 0 calc(var(--u) * 10) rgba(216, 184, 114, 0.25);
+    }
+    .intro-btn:disabled {
+      color: #5a4d33; border-color: #3a2f1c; cursor: default; box-shadow: none;
     }
   `;
   document.head.appendChild(style);
@@ -270,12 +273,15 @@ export function showIntro(): void {
   foot.style.cssText =
     'display:flex;justify-content:center;gap:calc(var(--u) * 16);' +
     'padding:calc(var(--u) * 9) 0 calc(var(--u) * 12);border-top:1px solid #4a3d24;background:#151009;';
+  // Both buttons sleep until the tale actually starts (owner rule, s62).
   const replayBtn = document.createElement('button');
   replayBtn.className = 'intro-btn';
   replayBtn.textContent = '⟲ Replay';
+  replayBtn.disabled = true;
   const continueBtn = document.createElement('button');
   continueBtn.className = 'intro-btn';
-  continueBtn.textContent = 'Continue ➤';
+  continueBtn.textContent = 'Skip ≫';
+  continueBtn.disabled = true;
   foot.append(replayBtn, continueBtn);
 
   frame.append(bar, stage, divider, textBox, foot);
@@ -289,7 +295,7 @@ export function showIntro(): void {
   pressKey.style.cssText =
     'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;' +
     'color:#9a8558;font-style:italic;background:#0d0b09;';
-  pressKey.textContent = 'Press any key to continue…';
+  pressKey.textContent = 'Press any key to play…';
 
   const audio = new Audio(`${import.meta.env.BASE_URL}intro/hello-world-jessica.mp3`);
   const crackle = new FireCrackle();
@@ -319,6 +325,8 @@ export function showIntro(): void {
     // Owner rule: the fire is heard first, the text starts climbing after a
     // second, and the narrator joins a few beats later.
     pressKey.remove();
+    replayBtn.disabled = false;
+    continueBtn.disabled = false;
     crackle.start();
     crawl.style.transform = `translateY(${textBox.clientHeight}px)`;
     flowTimer = window.setTimeout(startFlow, 1000);

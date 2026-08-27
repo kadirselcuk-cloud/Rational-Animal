@@ -993,3 +993,5 @@ Save format: building maxWorkers/productionMode + pendingWorks persisted.
 **Deployment verified:** the Actions workflow completed successfully and the game is LIVE at https://kadirselcuk-cloud.github.io/Rational-Animal/ (checked: HTTP 200). Every push to main now redeploys automatically.
 
 **Follow-up (session 61, same day):** (1) "Press any key to continue..." shown centered in the text field whenever the browser is holding the tale for a gesture (autoplay-allowed starts skip it entirely); (2) the text crawl now begins 1 s after the tale starts instead of waiting for the narrator - pacing recomputed (voice + 10 s extra + the 4.6 s head start) so the ending timing is unchanged; Replay uses the same 1 s / 5.6 s schedule. Build passes; pushed - auto-deploys to https://kadirselcuk-cloud.github.io/Rational-Animal/
+
+**Follow-up (session 62, same day):** waiting prompt reworded to "Press any key to play..."; Continue renamed "Skip >>" (same close behavior); both Replay and Skip start DISABLED (dimmed historic style) and enable the moment the tale begins playing. Build passes; pushed - auto-deploys.
