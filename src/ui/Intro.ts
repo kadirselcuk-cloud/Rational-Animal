@@ -283,16 +283,26 @@ export function showIntro(): void {
   overlay.appendChild(panel);
   document.body.appendChild(overlay);
 
+  // Waiting prompt, shown in the middle of the text field until the tale may
+  // begin (owner rule, s61) — only when the browser demands a gesture first.
+  const pressKey = document.createElement('div');
+  pressKey.style.cssText =
+    'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;' +
+    'color:#9a8558;font-style:italic;background:#0d0b09;';
+  pressKey.textContent = 'Press any key to continue…';
+
   const audio = new Audio(`${import.meta.env.BASE_URL}intro/hello-world-jessica.mp3`);
   const crackle = new FireCrackle();
   let raf = 0;
   let voiceTimer = 0;
+  let flowTimer = 0;
 
-  // Text rides with the voice: starts fully below the window, and the last
-  // sentences are slipping out the top just as the narrator finishes.
+  // The text begins its climb ONE second in (owner rule, s61) and is paced so
+  // the last sentences still slip out the top a while after the voice ends.
   const startFlow = () => {
     cancelAnimationFrame(raf);
-    const duration = (isFinite(audio.duration) && audio.duration > 10 ? audio.duration : 95) + FLOW_EXTRA_SECONDS;
+    const voiceDur = isFinite(audio.duration) && audio.duration > 10 ? audio.duration : 95;
+    const duration = voiceDur + FLOW_EXTRA_SECONDS + VOICE_DELAY_MS / 1000 - 1;
     const boxH = textBox.clientHeight;
     const total = boxH + crawl.offsetHeight;
     const t0 = performance.now();
@@ -306,13 +316,14 @@ export function showIntro(): void {
   };
 
   const beginTale = () => {
-    // Owner rule: the fire is heard first; the narrator joins a moment later.
+    // Owner rule: the fire is heard first, the text starts climbing after a
+    // second, and the narrator joins a few beats later.
+    pressKey.remove();
     crackle.start();
     crawl.style.transform = `translateY(${textBox.clientHeight}px)`;
+    flowTimer = window.setTimeout(startFlow, 1000);
     voiceTimer = window.setTimeout(() => {
       void audio.play().catch(() => undefined);
-      if (isFinite(audio.duration)) startFlow();
-      else audio.addEventListener('loadedmetadata', startFlow, { once: true });
     }, VOICE_DELAY_MS);
   };
 
@@ -331,6 +342,7 @@ export function showIntro(): void {
         beginTale();
       })
       .catch(() => {
+        textBox.appendChild(pressKey);
         const unlock = () => {
           window.removeEventListener('pointerdown', unlock);
           window.removeEventListener('keydown', unlock);
@@ -344,6 +356,7 @@ export function showIntro(): void {
   const close = () => {
     cancelAnimationFrame(raf);
     window.clearTimeout(voiceTimer);
+    window.clearTimeout(flowTimer);
     audio.pause();
     crackle.stop();
     overlay.remove();
@@ -359,15 +372,14 @@ export function showIntro(): void {
   replayBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     window.clearTimeout(voiceTimer);
+    window.clearTimeout(flowTimer);
     cancelAnimationFrame(raf);
     audio.pause();
     audio.currentTime = 0;
     crawl.style.transform = `translateY(${textBox.clientHeight}px)`;
     crackle.start(); // no-op if already burning
-    voiceTimer = window.setTimeout(() => {
-      void audio.play();
-      startFlow();
-    }, 800);
+    flowTimer = window.setTimeout(startFlow, 1000);
+    voiceTimer = window.setTimeout(() => void audio.play(), VOICE_DELAY_MS);
   });
   // When the narrator finishes, the fire keeps burning and the screen stays
   // until the player chooses to Continue.
