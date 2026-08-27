@@ -3,6 +3,7 @@ import { OreType, TileType, type TileMap } from '../world/tiles';
 import type { World } from '../world/worldScene';
 import { PathGrid } from './pathfinding';
 import { randomName } from './names';
+import { randomTownName } from '../data/townNames';
 import { SEASON_META, SEASON_SECONDS, type Calendar, type Season } from './calendar';
 import type { Events } from '../ui/Events';
 import {
@@ -688,6 +689,8 @@ export class Village {
     spears: 0, bronzeWeapons: 0, ironWeapons: 0, leatherArmor: 0,
   };
   readonly villagers: Villager[] = [];
+  /** The town's name — drawn at random on founding, kept by saves (s63). */
+  townName = randomTownName();
   // Owner rule: every profession starts unassigned — the player builds the
   // workforce from zero.
   readonly desired: Record<Profession, number> = {

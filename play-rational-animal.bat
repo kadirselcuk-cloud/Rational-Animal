@@ -1,5 +1,5 @@
 @echo off
-rem Launches Northreach in a browser window that ALLOWS sound autoplay
+rem Launches Rational Animal in a browser window that ALLOWS sound autoplay
 rem (owner request, session 56: no click needed after F5).
 rem Uses a dedicated browser profile so the flag reliably applies.
 

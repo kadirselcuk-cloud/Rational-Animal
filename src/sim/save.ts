@@ -108,6 +108,8 @@ export interface SaveData {
   animalsList?: { sp: string; x: number; z: number; ax: number; az: number; young: boolean }[];
   stats?: { births: number; deaths: number };
   history?: { t: number; pop: number; food: number; firewood: number }[];
+  /** The town's name (session 63). */
+  town?: string;
 }
 
 export function captureSave(
@@ -197,6 +199,7 @@ export function captureSave(
       .map((a) => ({ sp: a.species, x: a.x, z: a.z, ax: a.anchorX, az: a.anchorZ, young: a.young })),
     stats: { ...village.stats },
     history: village.history.map((h) => ({ ...h })),
+    town: village.townName,
   };
 }
 
@@ -324,6 +327,7 @@ export function applySave(
     if (v.carrying) v.navigate(village.pathToHome(v), 'toHome');
   }
 
+  if (data.town) village.townName = data.town;
   if (data.stats) Object.assign(village.stats, data.stats);
   if (data.history) {
     village.history.length = 0;

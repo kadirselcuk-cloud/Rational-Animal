@@ -995,3 +995,11 @@ Save format: building maxWorkers/productionMode + pendingWorks persisted.
 **Follow-up (session 61, same day):** (1) "Press any key to continue..." shown centered in the text field whenever the browser is holding the tale for a gesture (autoplay-allowed starts skip it entirely); (2) the text crawl now begins 1 s after the tale starts instead of waiting for the narrator - pacing recomputed (voice + 10 s extra + the 4.6 s head start) so the ending timing is unchanged; Replay uses the same 1 s / 5.6 s schedule. Build passes; pushed - auto-deploys to https://kadirselcuk-cloud.github.io/Rational-Animal/
 
 **Follow-up (session 62, same day):** waiting prompt reworded to "Press any key to play..."; Continue renamed "Skip >>" (same close behavior); both Replay and Skip start DISABLED (dimmed historic style) and enable the moment the tale begins playing. Build passes; pushed - auto-deploys.
+
+---
+
+## Session 63 - 2026-08-27 (Project renamed Rational Animal; random town names)
+
+**Owner instructions:** rename the project from Northreach to Rational Animal; in-game, give the town a random name - 200 town names in a data file, one picked at game start.
+
+**Implemented:** page/showcase titles, package name (rational-animal), HUD header, and the launcher (play-rational-animal.bat) all renamed - localStorage keys deliberately KEPT as northreach-* so existing saves and window layouts survive. New src/data/townNames.ts with exactly 200 unique medieval-English town names + randomTownName(); Village.townName drawn at founding, persisted in saves (data.town), shown in the HUD header and atop the Town information window. (Two PowerShell text-rewrite mishaps en route - showcase.html mojibake and a BOM in package.json - both caught and fixed; the no-PowerShell-rewrites rule stands re-learned.) Build passes; pushed - auto-deploys.

@@ -23,6 +23,7 @@ export interface Panels {
  */
 export class Hud {
   private seasonEl: HTMLElement;
+  private townEl: HTMLElement;
   private fpsEl: HTMLElement;
   private timeEl: HTMLElement;
   private buttons = new Map<SpeedSetting, HTMLButtonElement>();
@@ -31,15 +32,21 @@ export class Hud {
   private calendar: Calendar | null = null;
   private panels: Panels | null = null;
 
+  /** Show the town's name atop the HUD (owner rule, s63). */
+  setTown(name: string): void {
+    this.townEl.textContent = `🏰 ${name}`;
+  }
+
   constructor(private readonly loop: GameLoop, seed: number) {
     const root = document.getElementById('hud')!;
     root.innerHTML = `
-      <div><strong>Northreach</strong></div>
+      <div><strong id="hud-town">Rational Animal</strong></div>
       <div class="row"><span id="hud-season"></span></div>
       <div class="row" id="hud-speeds"></div>
       <div class="row" id="hud-menu"></div>
     `;
     this.seasonEl = root.querySelector('#hud-season')!;
+    this.townEl = root.querySelector('#hud-town')!;
 
     const speedsRow = root.querySelector('#hud-speeds')!;
     const speeds: { s: SpeedSetting; label: string }[] = [

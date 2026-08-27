@@ -34,6 +34,7 @@ export class InfoPanel {
       v.resources.woodenTools + v.resources.stoneTools + v.resources.bronzeTools + v.resources.ironTools,
     );
     this.win.body.innerHTML = `
+      <div class="info-row"><span>🏰 Town</span><span><strong>${v.townName}</strong></span></div>
       <div class="info-row"><span>👥 Population</span><span>${v.villagers.length}</span></div>
       <div class="info-row"><span>Adults</span><span>${men + women} (♂ ${men} · ♀ ${women})</span></div>
       <div class="info-row"><span>Children</span><span>${children} (📖 ${v.studentCount()} in school)</span></div>

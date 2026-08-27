@@ -158,6 +158,7 @@ const wallRenderer = new WallRenderer(scene, village, world.terrain);
 initTooltips();
 const hud = new Hud(loop, seed);
 hud.bindCalendar(calendar);
+hud.setTown(village.townName);
 const buildingInfo = new BuildingInfoPanel(village);
 const characterPanel = new CharacterPanel(village);
 buildingInfo.onSelectVillager = (v) => characterPanel.open(v);
