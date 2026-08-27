@@ -197,7 +197,7 @@ export function showIntro(): void {
   const stage = document.createElement('div');
   stage.style.cssText = 'position:relative;overflow:hidden;';
   const img = document.createElement('img');
-  img.src = '/intro/cavemen.jpg';
+  img.src = `${import.meta.env.BASE_URL}intro/cavemen.jpg`;
   img.alt = '';
   img.style.cssText = 'width:100%;display:block;animation:intro-image-breathe 3.7s infinite;';
   const glow = document.createElement('div');
@@ -283,7 +283,7 @@ export function showIntro(): void {
   overlay.appendChild(panel);
   document.body.appendChild(overlay);
 
-  const audio = new Audio('/intro/hello-world-jessica.mp3');
+  const audio = new Audio(`${import.meta.env.BASE_URL}intro/hello-world-jessica.mp3`);
   const crackle = new FireCrackle();
   let raf = 0;
   let voiceTimer = 0;
