@@ -1094,3 +1094,9 @@ mouseover info card ("Requires:" list with ✓/· and each prereq's tier); the *
 clearly** on every card (green text, 3-line clamp) and as a labeled "Bonus:" row on the hover
 card. Cards grew to 188×92 to fit the bonus text; T7/T8/Epilogue are full-width locked rows at
 the bottom. Screenshot-verified; build passes; pushed.
+
+**Follow-up (same session) — UI font decision (recorded as ROADMAP.md decision 18):** the UI
+font was bad (the tech tree overlay fell back to the browser default). Owner rule: use a good,
+popular, everywhere-available Google Font → **Inter** is now the game-wide UI typeface
+(`index.html`: Google Fonts link + `body` rule + all former "Segoe UI" declarations, fallbacks
+kept for offline dev). Chapter screens keep IM Fell English by design. Build passes; pushed.

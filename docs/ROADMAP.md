@@ -101,6 +101,7 @@ The Epilogue presentation ("Are We There Yet, Aristo?"), campaign-wide balance p
 15. **Campaign only — no sandbox mode.** The tiered campaign is the game.
 16. **Old saves are wiped** when Phase C ships; no migration or legacy mode.
 17. **Start screen art:** Phase A builds with placeholder art so layout/menus aren't blocked; the owner's 5 PNGs (statue ideally transparent-background, ≥ ~1024 px long edge) drop in when ready.
+18. **UI font (owner, 2026-08-28): Inter** (Google Fonts — popular, available everywhere) is the game's UI typeface, loaded in `index.html` with `"Segoe UI", system-ui, sans-serif` fallbacks for offline dev. Applies to all UI including the tech tree. The historic **chapter screens keep IM Fell English** (their period look is intentional).
 
 ---
 
