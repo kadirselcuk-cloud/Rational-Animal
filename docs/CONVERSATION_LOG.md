@@ -1111,3 +1111,13 @@ techtree.ts, condensed from the era intros; stub-row notes upgraded to the same 
 for the locked late ages); (6) drag-panning no longer selects text (user-select:none on the
 overlay); (7) font consistency audited — all UI is Inter now, chapter screens intentionally
 IM Fell English, no other font declarations exist. Build passes; screenshot-verified; pushed.
+
+**Follow-up (same session) — intro font mismatch (owner report):** header, flowing text and
+buttons looked like different fonts. Cause: the IM Fell English stylesheet was injected only when
+the chapter opened, so on a slow/blocked font fetch the intro rendered in fallback Palatino —
+whose letter-spaced header vs. italic prompt vs. small buttons read as three different faces.
+Fix: IM Fell English now loads up front from index.html in the same Google Fonts request as
+Inter (dynamic injection removed); the "Press any key" prompt got an explicit font-family too.
+Verified at 2× headless zoom: all intro text is one face. If the owner still sees a mismatch,
+Google Fonts is blocked on that network → next step would be self-hosting the font files in
+public/fonts. Build passes; pushed.

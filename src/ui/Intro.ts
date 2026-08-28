@@ -102,14 +102,11 @@ class FireCrackle {
  * 2026-08-28 — per-era text/art/voice arrive later).
  */
 export function showIntro(title = 'Hello World!', onClose?: () => void): void {
-  // A proper old-book face for the chapter (falls back to Palatino offline).
-  if (!document.getElementById('intro-font')) {
-    const link = document.createElement('link');
-    link.id = 'intro-font';
-    link.rel = 'stylesheet';
-    link.href = 'https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&display=swap';
-    document.head.appendChild(link);
-  }
+  // The old-book face (IM Fell English) is loaded up front by index.html
+  // together with Inter, so the chapter never opens on the Palatino fallback
+  // while the webfont is still on its way (owner report, 2026-08-28: header,
+  // flowing text and buttons looked like different fonts — that was the
+  // fallback rendering on a slow font fetch).
 
   // Keyframes: fire glow, image breathing, per-ember wandering paths.
   let emberFrames = '';
@@ -299,7 +296,7 @@ export function showIntro(title = 'Hello World!', onClose?: () => void): void {
   const pressKey = document.createElement('div');
   pressKey.style.cssText =
     'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;' +
-    'color:#9a8558;font-style:italic;background:#0d0b09;';
+    `color:#9a8558;font-family:${FONT};font-style:italic;background:#0d0b09;`;
   pressKey.textContent = 'Press any key to play…';
 
   const audio = new Audio(`${import.meta.env.BASE_URL}intro/hello-world-jessica.mp3`);
