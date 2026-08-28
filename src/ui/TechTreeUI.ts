@@ -1,12 +1,13 @@
 /**
- * The tech tree screen (Roadmap v2, Phase B). Opened with the 🌳 menu button:
- * a full-screen chart — tier columns T0–T6, branch rows, prerequisite lines —
- * with drag-pan and wheel-zoom. Hovering a tech shows its info card (image,
- * era, knowledge cost, effect, description); tiers beyond the current era are
- * locked and dimmed (owner decision 12). DEV MODE (owner request, 2026-08-28):
- * double-clicking any tech completes it "as if played" — all earlier tiers and
- * its prerequisite chain complete with it; finishing a tier advances the era
- * and plays the chapter intro with the new era's name.
+ * The tech tree screen (Roadmap v2, Phase B). Opened with the 🌳 menu button.
+ * Layout per owner (2026-08-28): tiers T0–T8 run down the Y axis, the ten
+ * tech branches across the X axis. No connection lines — prerequisites are
+ * listed on the mouseover info card; each tech card shows its bonus text
+ * directly. Drag-pan + wheel-zoom. Tiers beyond the current era are locked
+ * and dimmed (owner decision 12). DEV MODE (owner request): double-clicking
+ * any tech completes it "as if played" — all earlier tiers and its
+ * prerequisite chain complete with it; finishing a tier advances the era and
+ * plays the chapter intro with the new era's name.
  */
 
 import {
@@ -14,14 +15,14 @@ import {
   TechTreeState, techNodeById, type TechNode,
 } from '../sim/techtree';
 
-const NODE_W = 168;
-const NODE_H = 48;
+const NODE_W = 188;
+const NODE_H = 92;
 const GAP_Y = 10;
-const COL_W = NODE_W + 64;
-const LABEL_W = 150;
-const HEADER_H = 56;
-const BAND_GAP = 22;
-const STUB_W = 200;
+const COL_W = NODE_W + 16;
+const LABEL_W = 132;
+const HEADER_H = 46;
+const ROW_GAP = 26;
+const STUB_ROW_H = 74;
 
 export class TechTreeUI {
   readonly state = new TechTreeState();
@@ -35,11 +36,9 @@ export class TechTreeUI {
   private headerInfo!: HTMLSpanElement;
   private card!: HTMLDivElement;
   private nodeEls = new Map<string, HTMLDivElement>();
-  private edgeEls: { from: string; to: string; el: SVGPathElement }[] = [];
-  private zoom = 0.8;
-  private panX = 20;
-  private panY = 10;
-  private pos = new Map<string, { x: number; y: number }>();
+  private zoom = 0.62;
+  private panX = 10;
+  private panY = 6;
 
   get visible(): boolean {
     return !!this.overlay;
@@ -54,7 +53,6 @@ export class TechTreeUI {
     this.overlay?.remove();
     this.overlay = null;
     this.nodeEls.clear();
-    this.edgeEls = [];
   }
 
   open(): void {
@@ -170,127 +168,113 @@ export class TechTreeUI {
 
   private buildChart(): void {
     this.nodeEls.clear();
-    this.edgeEls = [];
-    this.pos.clear();
     const world = this.world;
     world.innerHTML = '';
 
-    // Vertical bands: one per branch, tall enough for its busiest tier.
+    // Cells: nodes bucketed by tier row × branch column.
     const buckets = new Map<string, TechNode[]>();
     for (const n of TECH_NODES) {
-      const key = `${n.branch}:${n.tier}`;
+      const key = `${n.tier}:${n.branch}`;
       const arr = buckets.get(key) ?? [];
       arr.push(n);
       buckets.set(key, arr);
     }
-    const bandTop = new Map<string, number>();
+
+    // Row tops: each tier row is as tall as its busiest branch column.
+    const rowTop: number[] = [];
     let y = HEADER_H + 8;
-    for (const b of BRANCH_ORDER) {
+    for (let t = 0; t <= 6; t++) {
+      rowTop[t] = y;
       let rows = 0;
-      for (let t = 0; t <= 6; t++) rows = Math.max(rows, buckets.get(`${b}:${t}`)?.length ?? 0);
-      bandTop.set(b, y);
-      y += rows * (NODE_H + GAP_Y) + BAND_GAP;
+      for (const b of BRANCH_ORDER) rows = Math.max(rows, buckets.get(`${t}:${b}`)?.length ?? 0);
+      y += rows * (NODE_H + GAP_Y) + ROW_GAP;
     }
-    const totalH = y + 20;
-    const totalW = LABEL_W + 7 * COL_W + STUB_TIERS.length * STUB_W + 60;
+    const stubTop = y;
+    const totalH = stubTop + STUB_TIERS.length * (STUB_ROW_H + 14) + 20;
+    const totalW = LABEL_W + BRANCH_ORDER.length * COL_W + 40;
     world.style.width = `${totalW}px`;
     world.style.height = `${totalH}px`;
 
-    // Node positions.
-    for (const [key, arr] of buckets) {
-      const [branch, tierStr] = key.split(':');
-      const tier = Number(tierStr);
-      arr.forEach((n, i) => {
-        this.pos.set(n.id, {
-          x: LABEL_W + tier * COL_W,
-          y: (bandTop.get(branch) ?? 0) + i * (NODE_H + GAP_Y),
-        });
-      });
-    }
-
-    // Edges first (under the nodes).
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('width', String(totalW));
-    svg.setAttribute('height', String(totalH));
-    svg.style.cssText = 'position:absolute;left:0;top:0;pointer-events:none;';
-    for (const n of TECH_NODES) {
-      const to = this.pos.get(n.id)!;
-      for (const p of n.prereqs) {
-        const from = this.pos.get(p);
-        if (!from) continue;
-        const x1 = from.x + NODE_W;
-        const y1 = from.y + NODE_H / 2;
-        const x2 = to.x;
-        const y2 = to.y + NODE_H / 2;
-        const mx = (x1 + x2) / 2;
-        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttribute('d', `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`);
-        path.setAttribute('fill', 'none');
-        path.setAttribute('stroke-width', '2');
-        svg.appendChild(path);
-        this.edgeEls.push({ from: p, to: n.id, el: path });
-      }
-    }
-    world.appendChild(svg);
-
-    // Tier headers.
-    for (let t = 0; t <= 6; t++) {
+    // Branch (tech type) headers across the top.
+    BRANCH_ORDER.forEach((b, i) => {
       const h = document.createElement('div');
       h.style.cssText =
-        `position:absolute;left:${LABEL_W + t * COL_W}px;top:6px;width:${NODE_W}px;` +
-        'text-align:center;color:#d8b872;font-weight:bold;font-size:calc(var(--u) * 13);line-height:1.25;';
-      h.innerHTML = `T${t}<br><span style="font-size:calc(var(--u) * 11);color:#b09055">${TIER_NAMES[t]}</span>`;
+        `position:absolute;left:${LABEL_W + i * COL_W}px;top:8px;width:${NODE_W}px;` +
+        'text-align:center;color:#8fa8b5;font-weight:bold;font-size:calc(var(--u) * 13);';
+      h.textContent = BRANCH_LABELS[b];
       world.appendChild(h);
       const col = document.createElement('div');
       col.style.cssText =
-        `position:absolute;left:${LABEL_W + t * COL_W - 18}px;top:${HEADER_H}px;width:1px;` +
+        `position:absolute;left:${LABEL_W + i * COL_W - 8}px;top:${HEADER_H}px;width:1px;` +
         `height:${totalH - HEADER_H - 10}px;background:#1d262c;`;
       world.appendChild(col);
-    }
+    });
 
-    // Branch labels.
-    for (const b of BRANCH_ORDER) {
+    // Tier (era) labels down the left + row separators.
+    for (let t = 0; t <= 6; t++) {
       const l = document.createElement('div');
       l.style.cssText =
-        `position:absolute;left:8px;top:${bandTop.get(b)}px;width:${LABEL_W - 24}px;` +
-        'color:#8fa8b5;font-size:calc(var(--u) * 12);font-weight:bold;';
-      l.textContent = BRANCH_LABELS[b];
+        `position:absolute;left:8px;top:${rowTop[t]}px;width:${LABEL_W - 28}px;` +
+        'color:#d8b872;font-size:calc(var(--u) * 12);font-weight:bold;line-height:1.35;';
+      l.innerHTML = `T${t}<br><span style="font-weight:normal;color:#b09055;">${TIER_NAMES[t]}</span>`;
       world.appendChild(l);
+      const sep = document.createElement('div');
+      sep.style.cssText =
+        `position:absolute;left:8px;top:${rowTop[t] - Math.floor(ROW_GAP / 2) - 2}px;` +
+        `width:${totalW - 40}px;height:1px;background:#22303a;`;
+      world.appendChild(sep);
     }
 
-    // Nodes.
-    for (const n of TECH_NODES) {
-      const p = this.pos.get(n.id)!;
-      const el = document.createElement('div');
-      el.style.cssText =
-        `position:absolute;left:${p.x}px;top:${p.y}px;width:${NODE_W}px;height:${NODE_H}px;` +
-        'box-sizing:border-box;border-radius:calc(var(--u) * 5);padding:calc(var(--u) * 4) calc(var(--u) * 7);' +
-        'display:flex;align-items:center;gap:calc(var(--u) * 6);cursor:pointer;user-select:none;overflow:hidden;';
-      el.innerHTML =
-        `<span style="font-size:calc(var(--u) * 17);flex:0 0 auto;">${n.icon}</span>` +
-        `<span style="flex:1;min-width:0;font-size:calc(var(--u) * 11);line-height:1.2;color:inherit;">` +
-        `${n.star ? '⭐ ' : ''}${n.name}<br><span style="opacity:0.75;">📖 ${n.kp}</span></span>`;
-      el.addEventListener('pointerdown', (e) => e.stopPropagation());
-      el.addEventListener('mouseenter', () => this.showCard(n, el));
-      el.addEventListener('mouseleave', () => {
-        this.card.style.display = 'none';
+    // Tech cards.
+    for (const [key, arr] of buckets) {
+      const [tierStr, branch] = key.split(':');
+      const tier = Number(tierStr);
+      const col = BRANCH_ORDER.indexOf(branch as (typeof BRANCH_ORDER)[number]);
+      arr.forEach((n, i) => {
+        const x = LABEL_W + col * COL_W;
+        const nodeY = rowTop[tier] + i * (NODE_H + GAP_Y);
+        const el = document.createElement('div');
+        el.style.cssText =
+          `position:absolute;left:${x}px;top:${nodeY}px;width:${NODE_W}px;height:${NODE_H}px;` +
+          'box-sizing:border-box;border-radius:calc(var(--u) * 5);padding:calc(var(--u) * 6) calc(var(--u) * 8);' +
+          'display:flex;flex-direction:column;gap:calc(var(--u) * 3);cursor:pointer;user-select:none;overflow:hidden;';
+        el.innerHTML =
+          `<div style="display:flex;align-items:center;gap:calc(var(--u) * 6);">` +
+          `<span style="font-size:calc(var(--u) * 16);flex:0 0 auto;">${n.icon}</span>` +
+          `<span style="flex:1;min-width:0;font-size:calc(var(--u) * 11);font-weight:bold;line-height:1.15;` +
+          `white-space:nowrap;text-overflow:ellipsis;overflow:hidden;">${n.star ? '⭐ ' : ''}${n.name}</span>` +
+          `<span style="flex:0 0 auto;font-size:calc(var(--u) * 10);opacity:0.8;">📖 ${n.kp}</span></div>` +
+          `<div class="tt-bonus" style="font-size:calc(var(--u) * 10);line-height:1.3;color:#9fd0a8;` +
+          `display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">${n.effect}</div>`;
+        el.addEventListener('pointerdown', (e) => e.stopPropagation());
+        el.addEventListener('mouseenter', () => this.showCard(n, el));
+        el.addEventListener('mouseleave', () => {
+          this.card.style.display = 'none';
+        });
+        el.addEventListener('dblclick', () => this.devComplete(n));
+        this.nodeEls.set(n.id, el);
+        world.appendChild(el);
       });
-      el.addEventListener('dblclick', () => this.devComplete(n));
-      this.nodeEls.set(n.id, el);
-      world.appendChild(el);
     }
 
-    // The chapters beyond: locked plaques for T7/T8/Epilogue.
+    // The chapters beyond: locked full-width rows for T7/T8/Epilogue.
     STUB_TIERS.forEach((s, i) => {
-      const x = LABEL_W + 7 * COL_W + i * STUB_W;
+      const top = stubTop + i * (STUB_ROW_H + 14);
+      const l = document.createElement('div');
+      l.style.cssText =
+        `position:absolute;left:8px;top:${top}px;width:${LABEL_W - 28}px;` +
+        'color:#5f7784;font-size:calc(var(--u) * 12);font-weight:bold;line-height:1.35;';
+      l.innerHTML = `${i < 2 ? `T${7 + i}` : '∞'}<br><span style="font-weight:normal;">${s.name}</span>`;
+      world.appendChild(l);
       const plaque = document.createElement('div');
       plaque.style.cssText =
-        `position:absolute;left:${x}px;top:${HEADER_H + 8}px;width:${STUB_W - 30}px;` +
+        `position:absolute;left:${LABEL_W}px;top:${top}px;width:${BRANCH_ORDER.length * COL_W - 16}px;` +
+        `height:${STUB_ROW_H}px;box-sizing:border-box;` +
         'border:1px dashed #3b4f5c;border-radius:calc(var(--u) * 6);padding:calc(var(--u) * 12);' +
         'color:#5f7784;font-size:calc(var(--u) * 12);line-height:1.5;';
       plaque.innerHTML =
-        `<div style="color:#8fa8b5;font-weight:bold;">🔒 ${i < 2 ? `T${7 + i}` : 'Epilogue'} · ${s.name}</div>` +
-        `<div style="margin-top:calc(var(--u) * 6);font-style:italic;">${s.note}</div>`;
+        `<div style="color:#8fa8b5;font-weight:bold;">🔒 ${s.name}</div>` +
+        `<div style="margin-top:calc(var(--u) * 4);font-style:italic;">${s.note}</div>`;
       world.appendChild(plaque);
     });
   }
@@ -332,7 +316,7 @@ export class TechTreeUI {
       ? n.prereqs
           .map((p) => {
             const pn = techNodeById.get(p)!;
-            return `${this.state.isResearched(p) ? '✓' : '·'} ${pn.icon} ${pn.name}`;
+            return `${this.state.isResearched(p) ? '✓' : '·'} ${pn.icon} ${pn.name} <span style="color:#5f7784">(T${pn.tier})</span>`;
           })
           .join('<br>')
       : '—';
@@ -346,7 +330,7 @@ export class TechTreeUI {
       </div>
       <hr style="border:none;border-top:1px solid #2c3a42;margin:calc(var(--u) * 7) 0;">
       <div>📖 <strong>${n.kp}</strong> knowledge · ${status}</div>
-      <div style="margin-top:calc(var(--u) * 6);">${n.effect}</div>
+      <div style="margin-top:calc(var(--u) * 6);color:#9fd0a8;"><strong>Bonus:</strong> ${n.effect}</div>
       <div style="margin-top:calc(var(--u) * 6);font-style:italic;color:#b09055;">${n.flavor}</div>
       <hr style="border:none;border-top:1px solid #2c3a42;margin:calc(var(--u) * 7) 0;">
       <div style="color:#9fb8c6;">Requires:<br>${prereqs}</div>`;
@@ -366,7 +350,7 @@ export class TechTreeUI {
     this.world.style.transform = `translate(${this.panX}px, ${this.panY}px) scale(${this.zoom})`;
   }
 
-  /** Re-style every node and edge from the current research state. */
+  /** Re-style every card from the current research state. */
   refresh(): void {
     if (!this.overlay) return;
     const tier = this.state.currentTier();
@@ -392,11 +376,6 @@ export class TechTreeUI {
           : '1px solid #2c3a42';
       el.style.color = done ? '#e8d5a2' : ready ? '#cfe8d5' : '#9fb8c6';
       el.style.boxShadow = ready ? '0 0 calc(var(--u) * 8) rgba(90, 180, 110, 0.25)' : 'none';
-    }
-    for (const e of this.edgeEls) {
-      const litUp = this.state.isResearched(e.from) && this.state.isResearched(e.to);
-      e.el.setAttribute('stroke', litUp ? '#b8944f' : '#2c3a42');
-      e.el.setAttribute('stroke-width', litUp ? '2.5' : '2');
     }
   }
 }

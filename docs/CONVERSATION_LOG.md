@@ -1087,3 +1087,10 @@ Phase F and Phases I/J descriptions updated to match. Roadmap v2 now has zero op
 1. Owner explores the tree in-game (🌳), reviews node picks & flavor lines (TECH_TREE.md for the tables).
 2. Phase B remainder: real research loop — action-KP earning, current-research selection, completion popup with auto-recommended next research (decision 1).
 3. Then Phase C: tier-gating engine + T0 start; merge tree state into saves.
+
+**Follow-up (same session) — tree layout per owner:** tiers **T0–T8 down the Y axis**, the ten
+tech types **across the X axis**; **no connection lines** — prerequisites live only on the
+mouseover info card ("Requires:" list with ✓/· and each prereq's tier); the **bonus is shown
+clearly** on every card (green text, 3-line clamp) and as a labeled "Bonus:" row on the hover
+card. Cards grew to 188×92 to fit the bonus text; T7/T8/Epilogue are full-width locked rows at
+the bottom. Screenshot-verified; build passes; pushed.
