@@ -18,7 +18,9 @@ const PARAGRAPHS: string[] = [
   `So here is the deal, animal. Develop. Learn. Discover. Every skill you master is one small step away from the beast — though do watch, on your way up, how much of the beast you pack for the journey. Or don't develop, and die, and be scavenged by other animals... much like yourself. The forest is fine with either outcome. Welcome to the world — it wasn't waiting for you.`,
 ];
 
-const FONT = `'IM Fell English', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif`;
+// One game font everywhere (owner rule, 2026-08-28): the chapter uses Inter
+// like the rest of the UI — no separate historic face.
+const FONT = `'Inter', 'Segoe UI', system-ui, sans-serif`;
 const VOICE_DELAY_MS = 5600; // the fire burns alone before the narrator speaks
 const FLOW_EXTRA_SECONDS = 10; // the tale scrolls a little longer than the voice
 
@@ -102,11 +104,6 @@ class FireCrackle {
  * 2026-08-28 — per-era text/art/voice arrive later).
  */
 export function showIntro(title = 'Hello World!', onClose?: () => void): void {
-  // The old-book face (IM Fell English) is loaded up front by index.html
-  // together with Inter, so the chapter never opens on the Palatino fallback
-  // while the webfont is still on its way (owner report, 2026-08-28: header,
-  // flowing text and buttons looked like different fonts — that was the
-  // fallback rendering on a slow font fetch).
 
   // Keyframes: fire glow, image breathing, per-ember wandering paths.
   let emberFrames = '';

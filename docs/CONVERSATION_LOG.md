@@ -1121,3 +1121,9 @@ Inter (dynamic injection removed); the "Press any key" prompt got an explicit fo
 Verified at 2× headless zoom: all intro text is one face. If the owner still sees a mismatch,
 Google Fonts is blocked on that network → next step would be self-hosting the font files in
 public/fonts. Build passes; pushed.
+
+**Follow-up (same session) — owner overrules the chapter-screen exception: Inter EVERYWHERE.**
+IM Fell English removed entirely (index.html loads only Inter, now incl. the italic 400 variant
+for the intro's italics; Intro.ts FONT is the Inter stack). ROADMAP.md decision 18 updated: Inter
+is the game's ONLY typeface, chapter screens included. Verified by 2× screenshot; build passes;
+pushed.
