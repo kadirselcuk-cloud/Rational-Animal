@@ -1100,3 +1100,14 @@ font was bad (the tech tree overlay fell back to the browser default). Owner rul
 popular, everywhere-available Google Font → **Inter** is now the game-wide UI typeface
 (`index.html`: Google Fonts link + `body` rule + all former "Segoe UI" declarations, fallbacks
 kept for offline dev). Chapter screens keep IM Fell English by design. Build passes; pushed.
+
+**Follow-up (same session) — age-column polish (owner batch):** (1) age titles vertically
+centered in their rows; (2) **T0–T8 codes removed from the whole UI** — they are dev shorthand
+only (docs/code); the player sees era names alone (header, hover cards, prereq lists, stub rows);
+(3) each age carries a **2–3 sentence humorous description** under its title (`TIER_BLURBS` in
+techtree.ts, condensed from the era intros; stub-row notes upgraded to the same voice);
+(4) age column widened 132→258 px so the blurbs sit naturally; (5) **per-age background shades**
+(cold-dawn blue, blood red, field green, bronze, gold, clergy purple, kindling orange; neutral
+for the locked late ages); (6) drag-panning no longer selects text (user-select:none on the
+overlay); (7) font consistency audited — all UI is Inter now, chapter screens intentionally
+IM Fell English, no other font declarations exist. Build passes; screenshot-verified; pushed.

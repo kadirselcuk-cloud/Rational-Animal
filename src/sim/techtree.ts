@@ -30,7 +30,8 @@ export const BRANCH_LABELS: Record<TechBranch, string> = {
   civ: '🏛️ Society',
 };
 
-/** Era names for the tiers that carry nodes (T0–T6). */
+/** Era names for the tiers that carry nodes (internally T0–T6 — the T-codes
+ * are dev shorthand only and never shown to the player). */
 export const TIER_NAMES = [
   'Hello World!',
   'Bloody Roots',
@@ -41,11 +42,40 @@ export const TIER_NAMES = [
   'The Kindling',
 ];
 
+/** Short humorous age descriptions shown under the era title in the tree
+ * (tone rule; condensed from the SKILL_TREE.md era intros). */
+export const TIER_BLURBS = [
+  'A damp huddle of upright mammals with thumbs, complaints, and a borrowed fire. ' +
+    "The agenda: eat, sleep, don't get eaten. The wolves are taking bets.",
+  'The legendary ancestors, live and unwashed: sharper sticks, cleverer traps, and a scholarly ' +
+    "devotion to animal droppings. Hard? Enormously. So was the salmon's year, and nobody sings about the salmon.",
+  'You fenced the grass, roofed the mud, and called it home — the animal you finally tamed is you. ' +
+    'Promoted from ape to primate; the ceremony is held daily, at dawn, in the field.',
+  'Furnaces make stone weep metal and marks in clay remember — no wolf ever managed either. ' +
+    "The first thing you cast, though, was a spear. And the walls aren't for wolves; they're for neighbors... much like yourself.",
+  'Iron in every hand, roads that run straight, a bearded optimist declaring you rational. ' +
+    'Then you minted the coin — the first appetite in the history of life with no bottom. ' +
+    'The squirrel stops hoarding when winter is covered. You found a way not to.',
+  'Castles on the hills, mills on the streams, and you in the ledger one line below the oxen. ' +
+    'Chains cost iron; a fence inside the head costs one sermon a week. Wages for obedience are paid in heaven — non-refundable.',
+  'The cannon has opinions about your walls, and the press makes sparks contagious. ' +
+    "Grow, kneel, or become a lesson in somebody else's chronicle. The kindling is stacked, animal — the spark is yours.",
+];
+
 /** The chapters after the settlement game — separate tech trees, designed later. */
 export const STUB_TIERS = [
-  { name: 'Golden Age, Iron Price', note: 'A different game. Its own tree. Later.' },
-  { name: 'Full Metal Century', note: 'A different game. Its own tree. Later.' },
-  { name: 'Are We There Yet, Aristo?', note: 'The epilogue writes itself. You did.' },
+  {
+    name: 'Golden Age, Iron Price',
+    note: "The astronomer's ship carries chains: discovery pays, cruelty pays better. A different game, with its own tree — later.",
+  },
+  {
+    name: 'Full Metal Century',
+    note: 'Science delivers — by the trainload, around the clock, in shifts. A different game, with its own tree — later.',
+  },
+  {
+    name: 'Are We There Yet, Aristo?',
+    note: 'The ashes cool and the question falls due. No tree here — just you, answering it.',
+  },
 ];
 
 export interface TechNode {

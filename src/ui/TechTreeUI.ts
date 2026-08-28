@@ -11,7 +11,7 @@
  */
 
 import {
-  BRANCH_LABELS, BRANCH_ORDER, STUB_TIERS, TECH_NODES, TIER_NAMES,
+  BRANCH_LABELS, BRANCH_ORDER, STUB_TIERS, TECH_NODES, TIER_BLURBS, TIER_NAMES,
   TechTreeState, techNodeById, type TechNode,
 } from '../sim/techtree';
 
@@ -19,10 +19,22 @@ const NODE_W = 188;
 const NODE_H = 92;
 const GAP_Y = 10;
 const COL_W = NODE_W + 16;
-const LABEL_W = 132;
+const LABEL_W = 258;
 const HEADER_H = 46;
 const ROW_GAP = 26;
-const STUB_ROW_H = 74;
+const STUB_ROW_H = 88;
+
+/** One background shade per age (subtle, era-flavored). */
+const TIER_TINTS = [
+  'rgba(96, 120, 150, 0.10)', // Hello World! — cold dawn
+  'rgba(160, 70, 60, 0.10)',  // Bloody Roots
+  'rgba(96, 150, 84, 0.10)',  // Domesticated — fields
+  'rgba(196, 126, 60, 0.10)', // Civilization! — bronze
+  'rgba(200, 168, 72, 0.09)', // Iron Age, Golden Price — gold
+  'rgba(140, 96, 170, 0.10)', // Shepherds & Sheep — clergy purple
+  'rgba(224, 110, 50, 0.10)', // The Kindling — fire
+];
+const STUB_TINT = 'rgba(120, 130, 140, 0.05)';
 
 export class TechTreeUI {
   readonly state = new TechTreeState();
@@ -59,7 +71,8 @@ export class TechTreeUI {
     if (this.overlay) return;
     const overlay = document.createElement('div');
     overlay.style.cssText =
-      'position:fixed;inset:0;z-index:55;background:rgba(8,10,12,0.96);display:flex;flex-direction:column;';
+      'position:fixed;inset:0;z-index:55;background:rgba(8,10,12,0.96);display:flex;flex-direction:column;' +
+      'user-select:none;-webkit-user-select:none;';
     this.overlay = overlay;
 
     // ---- header bar
@@ -182,18 +195,38 @@ export class TechTreeUI {
 
     // Row tops: each tier row is as tall as its busiest branch column.
     const rowTop: number[] = [];
+    const rowH: number[] = [];
     let y = HEADER_H + 8;
     for (let t = 0; t <= 6; t++) {
       rowTop[t] = y;
       let rows = 0;
       for (const b of BRANCH_ORDER) rows = Math.max(rows, buckets.get(`${t}:${b}`)?.length ?? 0);
-      y += rows * (NODE_H + GAP_Y) + ROW_GAP;
+      rowH[t] = rows * (NODE_H + GAP_Y) - GAP_Y;
+      y += rowH[t] + GAP_Y + ROW_GAP;
     }
     const stubTop = y;
     const totalH = stubTop + STUB_TIERS.length * (STUB_ROW_H + 14) + 20;
     const totalW = LABEL_W + BRANCH_ORDER.length * COL_W + 40;
     world.style.width = `${totalW}px`;
     world.style.height = `${totalH}px`;
+
+    // Age background bands (one shade per era) — behind everything else.
+    for (let t = 0; t <= 6; t++) {
+      const band = document.createElement('div');
+      band.style.cssText =
+        `position:absolute;left:0;top:${rowTop[t] - Math.floor(ROW_GAP / 2)}px;` +
+        `width:${totalW}px;height:${rowH[t] + ROW_GAP}px;background:${TIER_TINTS[t]};` +
+        'border-radius:calc(var(--u) * 4);';
+      world.appendChild(band);
+    }
+    STUB_TIERS.forEach((_s, i) => {
+      const band = document.createElement('div');
+      band.style.cssText =
+        `position:absolute;left:0;top:${stubTop + i * (STUB_ROW_H + 14) - 6}px;` +
+        `width:${totalW}px;height:${STUB_ROW_H + 12}px;background:${STUB_TINT};` +
+        'border-radius:calc(var(--u) * 4);';
+      world.appendChild(band);
+    });
 
     // Branch (tech type) headers across the top.
     BRANCH_ORDER.forEach((b, i) => {
@@ -210,19 +243,18 @@ export class TechTreeUI {
       world.appendChild(col);
     });
 
-    // Tier (era) labels down the left + row separators.
+    // Age panels down the left: era title + humorous description, vertically
+    // centered in the age's row. (No internal T-codes anywhere in the UI.)
     for (let t = 0; t <= 6; t++) {
       const l = document.createElement('div');
       l.style.cssText =
-        `position:absolute;left:8px;top:${rowTop[t]}px;width:${LABEL_W - 28}px;` +
-        'color:#d8b872;font-size:calc(var(--u) * 12);font-weight:bold;line-height:1.35;';
-      l.innerHTML = `T${t}<br><span style="font-weight:normal;color:#b09055;">${TIER_NAMES[t]}</span>`;
+        `position:absolute;left:12px;top:${rowTop[t]}px;width:${LABEL_W - 40}px;height:${rowH[t]}px;` +
+        'display:flex;flex-direction:column;justify-content:center;gap:calc(var(--u) * 6);' +
+        'padding-right:calc(var(--u) * 10);box-sizing:border-box;';
+      l.innerHTML =
+        `<div style="color:#d8b872;font-size:calc(var(--u) * 14);font-weight:bold;line-height:1.3;">${TIER_NAMES[t]}</div>` +
+        `<div style="color:#93a4ad;font-size:calc(var(--u) * 10.5);line-height:1.45;font-style:italic;">${TIER_BLURBS[t]}</div>`;
       world.appendChild(l);
-      const sep = document.createElement('div');
-      sep.style.cssText =
-        `position:absolute;left:8px;top:${rowTop[t] - Math.floor(ROW_GAP / 2) - 2}px;` +
-        `width:${totalW - 40}px;height:1px;background:#22303a;`;
-      world.appendChild(sep);
     }
 
     // Tech cards.
@@ -257,24 +289,22 @@ export class TechTreeUI {
       });
     }
 
-    // The chapters beyond: locked full-width rows for T7/T8/Epilogue.
+    // The chapters beyond: locked full-width rows for the later ages.
     STUB_TIERS.forEach((s, i) => {
       const top = stubTop + i * (STUB_ROW_H + 14);
       const l = document.createElement('div');
       l.style.cssText =
-        `position:absolute;left:8px;top:${top}px;width:${LABEL_W - 28}px;` +
-        'color:#5f7784;font-size:calc(var(--u) * 12);font-weight:bold;line-height:1.35;';
-      l.innerHTML = `${i < 2 ? `T${7 + i}` : '∞'}<br><span style="font-weight:normal;">${s.name}</span>`;
+        `position:absolute;left:12px;top:${top}px;width:${LABEL_W - 40}px;height:${STUB_ROW_H}px;` +
+        'display:flex;align-items:center;color:#8fa8b5;font-size:calc(var(--u) * 13);font-weight:bold;line-height:1.35;';
+      l.textContent = s.name;
       world.appendChild(l);
       const plaque = document.createElement('div');
       plaque.style.cssText =
         `position:absolute;left:${LABEL_W}px;top:${top}px;width:${BRANCH_ORDER.length * COL_W - 16}px;` +
-        `height:${STUB_ROW_H}px;box-sizing:border-box;` +
+        `height:${STUB_ROW_H}px;box-sizing:border-box;display:flex;align-items:center;` +
         'border:1px dashed #3b4f5c;border-radius:calc(var(--u) * 6);padding:calc(var(--u) * 12);' +
         'color:#5f7784;font-size:calc(var(--u) * 12);line-height:1.5;';
-      plaque.innerHTML =
-        `<div style="color:#8fa8b5;font-weight:bold;">🔒 ${s.name}</div>` +
-        `<div style="margin-top:calc(var(--u) * 4);font-style:italic;">${s.note}</div>`;
+      plaque.innerHTML = `<div>🔒 <span style="font-style:italic;">${s.note}</span></div>`;
       world.appendChild(plaque);
     });
   }
@@ -297,7 +327,7 @@ export class TechTreeUI {
         this.onMessage?.(`⭐ A new age dawns: ${TIER_NAMES[after]}`);
         this.onEraAdvance?.(after, TIER_NAMES[after]);
       } else {
-        this.onMessage?.('⭐ The settlement tree is complete. What comes next is a different game — T7 awaits.');
+        this.onMessage?.(`⭐ The settlement tree is complete. What comes next is a different game — ${STUB_TIERS[0].name} awaits.`);
       }
     }
   }
@@ -316,7 +346,8 @@ export class TechTreeUI {
       ? n.prereqs
           .map((p) => {
             const pn = techNodeById.get(p)!;
-            return `${this.state.isResearched(p) ? '✓' : '·'} ${pn.icon} ${pn.name} <span style="color:#5f7784">(T${pn.tier})</span>`;
+            const era = pn.tier !== n.tier ? ` <span style="color:#5f7784">(${TIER_NAMES[pn.tier]})</span>` : '';
+            return `${this.state.isResearched(p) ? '✓' : '·'} ${pn.icon} ${pn.name}${era}`;
           })
           .join('<br>')
       : '—';
@@ -325,7 +356,7 @@ export class TechTreeUI {
         <span style="font-size:calc(var(--u) * 34);">${n.icon}</span>
         <div>
           <div style="font-weight:bold;font-size:calc(var(--u) * 13);">${n.star ? '⭐ ' : ''}${n.name}</div>
-          <div style="color:#9fb8c6;">T${n.tier} · ${TIER_NAMES[n.tier]} · ${BRANCH_LABELS[n.branch]}</div>
+          <div style="color:#9fb8c6;">${TIER_NAMES[n.tier]} · ${BRANCH_LABELS[n.branch]}</div>
         </div>
       </div>
       <hr style="border:none;border-top:1px solid #2c3a42;margin:calc(var(--u) * 7) 0;">
@@ -357,10 +388,11 @@ export class TechTreeUI {
     if (tier <= 6) {
       const p = this.state.tierProgress(tier);
       this.headerInfo.textContent =
-        `Era T${tier} · ${TIER_NAMES[tier]} — ${p.done}/${p.total} researched, ` +
+        `${TIER_NAMES[tier]} — ${p.done}/${p.total} researched, ` +
         `${p.total - p.done} to the next age`;
     } else {
-      this.headerInfo.textContent = 'The settlement tree is complete — T7 is a different game.';
+      this.headerInfo.textContent =
+        `The settlement tree is complete — ${STUB_TIERS[0].name} is a different game.`;
     }
     for (const n of TECH_NODES) {
       const el = this.nodeEls.get(n.id)!;
