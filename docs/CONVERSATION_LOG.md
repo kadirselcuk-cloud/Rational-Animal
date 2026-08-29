@@ -1127,3 +1127,36 @@ IM Fell English removed entirely (index.html loads only Inter, now incl. the ita
 for the intro's italics; Intro.ts FONT is the Inter stack). ROADMAP.md decision 18 updated: Inter
 is the game's ONLY typeface, chapter screens included. Verified by 2× screenshot; build passes;
 pushed.
+
+---
+
+## Session 66 — 2026-08-30 (Phase A: the main menu — owner art delivered)
+
+**Owner delivered the 5 menu PNGs** (Desktop/Kadir/Temp/RationalAnimal: aristo, top-left,
+top-right, bottom-left, bottom-right — copied to `public/menu/`) **and the layout instruction:**
+Aristo at the top of the main menu, not knowing what to do; RATIONAL ANIMAL beneath him in all
+caps in Greek-architecture style with columns; the four artworks in the corners.
+
+**Implemented — `src/ui/MainMenu.ts`, shown on every fresh start (before the chapter):**
+- Full-screen menu on a dark radial-vignette ground; **Aristo statue top center** with a deep
+  drop shadow; beneath him a **temple front**: architrave line, **RATIONAL ANIMAL** in stone-
+  gradient carved caps (Inter, wide tracking — decision 18 holds), flanked by two inline-SVG
+  **Doric columns**, standing on a three-step stylobate.
+- **Corner artworks** (top-left cavemen hunt, top-right tribes/hoplites, bottom-left Spanish vs
+  Aztecs, bottom-right WW1) anchored to their corners with radial fade masks toward screen
+  center. Masks are deliberately tight: the bottom two PNGs have a checkerboard "transparency"
+  pattern baked into their pixels — the fade hides it. **If the owner re-exports those two with
+  real transparency, the masks can widen.**
+- **Buttons:** NEW GAME (→ closes menu → "Hello World!" chapter → game), CONTINUE (newest save
+  across slots incl. autosave, tooltip shows its summary; disabled when no saves), LOAD GAME
+  (in-menu slot list with summaries + Back; disabled when no saves). Settings later, per
+  decision 9. Continue/Load reload the page into the save (existing pending-load flow), which
+  correctly skips menu and chapter.
+- Flow wiring in main.ts: fresh start → menu; save-load boot → straight into the game;
+  ?techtree=1 dev flag unchanged.
+
+**Verified:** build passes; headless screenshots of the menu (disabled-state buttons, masks).
+Live at http://localhost:5180; pushed — auto-deploys.
+
+**Phase A remainder:** era-intro framework already done (session 65); Settings menu later.
+Next: Phase B remainder (action-KP research loop + completion popup) or owner feedback on menu.

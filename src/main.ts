@@ -29,6 +29,7 @@ import { TribeRenderer } from './render/TribeRenderer';
 import { WarSystem } from './sim/war';
 import { WarRenderer } from './render/WarRenderer';
 import { TechTreeUI } from './ui/TechTreeUI';
+import { MainMenu } from './ui/MainMenu';
 
 const container = document.getElementById('app')!;
 
@@ -92,8 +93,14 @@ let loadedFromSave = false;
 gameMusic.bindSeason(() => calendar.season);
 // Dev/verification flag: ?techtree=1 skips the chapter and opens the tree.
 const devOpenTechTree = new URLSearchParams(location.search).has('techtree');
-// Fresh starts open the "Hello World!" chapter screen (owner rule, s42).
-if (!loadedFromSave && !devOpenTechTree) showIntro();
+// Fresh starts open the MAIN MENU (Phase A, owner art 2026-08-30): Aristo,
+// the temple title, corner artworks. New Game leads into the "Hello World!"
+// chapter; Continue/Load reload into the chosen save (which skips the menu).
+if (!loadedFromSave && !devOpenTechTree) {
+  const menu = new MainMenu();
+  menu.onNewGame = () => showIntro();
+  menu.show();
+}
 // Loads skip the chapter, so the soundscape starts right away (the first
 // input wakes it if the browser held it back for want of a gesture).
 else {
