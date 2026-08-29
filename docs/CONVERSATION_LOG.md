@@ -1160,3 +1160,10 @@ Live at http://localhost:5180; pushed — auto-deploys.
 
 **Phase A remainder:** era-intro framework already done (session 65); Settings menu later.
 Next: Phase B remainder (action-KP research loop + completion popup) or owner feedback on menu.
+
+**Follow-up (same session) — owner sizing pass on the menu:** (1) corner fade masks removed —
+the owner adjusted the PNGs' own transparency to carry the blend; (2) RATIONAL ANIMAL title at
+60% of its size, columns shrunk to match (96→58); (3) Aristo 20% smaller; (4) corner images
+first +20%, then −10% of that; (5) **both bottom corner images removed** — only the top corners
+carry art now (bottom PNGs stay in public/menu for a possible return). Screenshot-verified;
+build passes; pushed.

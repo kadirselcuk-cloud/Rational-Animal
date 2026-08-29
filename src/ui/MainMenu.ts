@@ -53,25 +53,22 @@ export class MainMenu {
     this.overlay = overlay;
 
     // ---- the four era artworks, one per corner, fading toward the center.
-    const corners: { file: string; pos: string; obj: string; mask: string }[] = [
-      { file: 'top-left.png', pos: 'left:0;top:0;', obj: 'left top', mask: '0% 0%' },
-      { file: 'top-right.png', pos: 'right:0;top:0;', obj: 'right top', mask: '100% 0%' },
-      { file: 'bottom-left.png', pos: 'left:0;bottom:0;', obj: 'left bottom', mask: '0% 100%' },
-      { file: 'bottom-right.png', pos: 'right:0;bottom:0;', obj: 'right bottom', mask: '100% 100%' },
+    // Owner (2026-08-30): only the TOP corners carry artwork — the bottom two
+    // are removed (their PNGs stay in public/menu for a possible return).
+    const corners: { file: string; pos: string; obj: string }[] = [
+      { file: 'top-left.png', pos: 'left:0;top:0;', obj: 'left top' },
+      { file: 'top-right.png', pos: 'right:0;top:0;', obj: 'right top' },
     ];
     for (const c of corners) {
       const img = document.createElement('img');
       img.src = `${base}menu/${c.file}`;
       img.alt = '';
       img.draggable = false;
-      // Tight fade toward the screen center: it both blends the art into the
-      // dark background AND hides the checkerboard pattern baked into two of
-      // the delivered PNGs (real transparency would let this widen again).
-      const mask = `radial-gradient(120% 120% at ${c.mask}, rgba(0,0,0,0.95) 32%, rgba(0,0,0,0) 58%)`;
+      // No fade masks (owner, 2026-08-30): the PNGs' own transparency carries
+      // the blend into the background.
       img.style.cssText =
-        `position:absolute;${c.pos}width:min(36vw, 52vh);height:min(46vh, 40vw);` +
-        `object-fit:contain;object-position:${c.obj};pointer-events:none;` +
-        `-webkit-mask-image:${mask};mask-image:${mask};`;
+        `position:absolute;${c.pos}width:min(39vw, 56vh);height:min(50vh, 43vw);` +
+        `object-fit:contain;object-position:${c.obj};pointer-events:none;`;
       overlay.appendChild(img);
     }
 
@@ -86,7 +83,7 @@ export class MainMenu {
     statue.alt = '';
     statue.draggable = false;
     statue.style.cssText =
-      'height:min(38vh, 42vw);width:auto;object-fit:contain;' +
+      'height:min(30vh, 34vw);width:auto;object-fit:contain;' +
       'filter:drop-shadow(0 calc(var(--u) * 18) calc(var(--u) * 30) rgba(0,0,0,0.85));';
 
     // Temple front: columns flank the carved title over a stepped stylobate.
@@ -94,7 +91,7 @@ export class MainMenu {
     temple.style.cssText = 'display:flex;align-items:flex-end;gap:calc(var(--u) * 22);';
     const colL = document.createElement('div');
     const colR = document.createElement('div');
-    const colH = 96;
+    const colH = 58;
     colL.innerHTML = columnSvg(colH);
     colR.innerHTML = columnSvg(colH);
     const titleWrap = document.createElement('div');
@@ -106,7 +103,7 @@ export class MainMenu {
     const title = document.createElement('div');
     title.textContent = 'RATIONAL ANIMAL';
     title.style.cssText =
-      'font-weight:700;font-size:clamp(26px, 4.6vw, 58px);letter-spacing:0.32em;text-indent:0.32em;' +
+      'font-weight:700;font-size:clamp(16px, 2.76vw, 35px);letter-spacing:0.32em;text-indent:0.32em;' +
       'text-align:center;white-space:nowrap;' +
       'background:linear-gradient(180deg, #efe6cc 0%, #cbbc95 45%, #8f8262 80%, #b0a37e 100%);' +
       '-webkit-background-clip:text;background-clip:text;color:transparent;' +
