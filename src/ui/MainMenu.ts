@@ -91,7 +91,7 @@ export class MainMenu {
     temple.style.cssText = 'display:flex;align-items:flex-end;gap:calc(var(--u) * 22);';
     const colL = document.createElement('div');
     const colR = document.createElement('div');
-    const colH = 58;
+    const colH = 87;
     colL.innerHTML = columnSvg(colH);
     colR.innerHTML = columnSvg(colH);
     const titleWrap = document.createElement('div');
