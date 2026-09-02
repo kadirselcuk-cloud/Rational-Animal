@@ -1166,4 +1166,9 @@ the owner adjusted the PNGs' own transparency to carry the blend; (2) RATIONAL A
 60% of its size, columns shrunk to match (96→58); (3) Aristo 20% smaller; (4) corner images
 first +20%, then −10% of that; (5) **both bottom corner images removed** — only the top corners
 carry art now (bottom PNGs stay in public/menu for a possible return). Screenshot-verified;
-build passes; pushed.
+build passes; pushed. Later same session: columns 1.5× (58→87).
+
+**Follow-up (2026-09-02) — bottom corners return:** owner delivered re-exported bottom-left
+(conquistadors vs Aztecs) and bottom-right (WW1) PNGs with real transparency; copied to
+public/menu and both bottom corners restored in MainMenu.ts at the same sizing as the top ones.
+All four corners now blend cleanly with no masks. Screenshot-verified; build passes; pushed.

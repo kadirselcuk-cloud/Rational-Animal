@@ -53,11 +53,13 @@ export class MainMenu {
     this.overlay = overlay;
 
     // ---- the four era artworks, one per corner, fading toward the center.
-    // Owner (2026-08-30): only the TOP corners carry artwork — the bottom two
-    // are removed (their PNGs stay in public/menu for a possible return).
+    // All four corners carry artwork again (owner re-exported the bottom two
+    // with real transparency, 2026-09-02).
     const corners: { file: string; pos: string; obj: string }[] = [
       { file: 'top-left.png', pos: 'left:0;top:0;', obj: 'left top' },
       { file: 'top-right.png', pos: 'right:0;top:0;', obj: 'right top' },
+      { file: 'bottom-left.png', pos: 'left:0;bottom:0;', obj: 'left bottom' },
+      { file: 'bottom-right.png', pos: 'right:0;bottom:0;', obj: 'right bottom' },
     ];
     for (const c of corners) {
       const img = document.createElement('img');
