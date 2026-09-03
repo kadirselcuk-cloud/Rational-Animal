@@ -1172,3 +1172,4 @@ build passes; pushed. Later same session: columns 1.5× (58→87).
 (conquistadors vs Aztecs) and bottom-right (WW1) PNGs with real transparency; copied to
 public/menu and both bottom corners restored in MainMenu.ts at the same sizing as the top ones.
 All four corners now blend cleanly with no masks. Screenshot-verified; build passes; pushed.
+(2026-09-04: owner delivered a third iteration of both bottom PNGs — swapped in, verified, pushed.)
