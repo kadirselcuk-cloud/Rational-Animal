@@ -1173,3 +1173,10 @@ build passes; pushed. Later same session: columns 1.5× (58→87).
 public/menu and both bottom corners restored in MainMenu.ts at the same sizing as the top ones.
 All four corners now blend cleanly with no masks. Screenshot-verified; build passes; pushed.
 (2026-09-04: owner delivered a third iteration of both bottom PNGs — swapped in, verified, pushed.)
+
+**Follow-up (2026-09-04) — marble background:** owner delivered `marblebg.jpg` → the menu's
+dark vignette ground replaced with the **repeating marble texture** (public/menu/marblebg.jpg).
+Foreground re-cut for the light ground: title gradient flipped to engraved dark browns, column/
+architrave/step stonework darkened, statue drop-shadow softened to a warm brown, a whisper of
+sepia vignette added at the edges. The sepia corner art now reads as bas-relief carved into the
+marble; buttons stay dark bronze plaques for contrast. Screenshot-verified; build passes; pushed.

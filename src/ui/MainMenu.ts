@@ -12,9 +12,12 @@
 
 import { SAVE_SLOTS, readSlot, requestLoad, slotSummary, type SaveSlot } from '../sim/save';
 
+// Palette for the light marble ground (owner texture, 2026-09-04): the
+// stonework reads as ENGRAVED into the marble — darker browns with a pale
+// chisel highlight — while the buttons stay dark bronze plaques for contrast.
 const GOLD = '#d8c79a';
-const STONE = '#9a8f74';
-const DIM = '#6e6753';
+const STONE = '#77694c';
+const DIM = '#5b4f38';
 
 /** A small Doric column, drawn inline so it can flank the title. */
 function columnSvg(height: number): string {
@@ -48,8 +51,14 @@ export class MainMenu {
     const overlay = document.createElement('div');
     overlay.style.cssText =
       'position:fixed;inset:0;z-index:58;overflow:hidden;user-select:none;-webkit-user-select:none;' +
-      'background:radial-gradient(120% 90% at 50% 30%, #16181d 0%, #0b0d10 55%, #060708 100%);' +
+      `background:url(${base}menu/marblebg.jpg) repeat;background-size:auto;` +
       'display:flex;align-items:center;justify-content:center;';
+    // A whisper of vignette so the marble doesn't flatten the composition.
+    const vignette = document.createElement('div');
+    vignette.style.cssText =
+      'position:absolute;inset:0;pointer-events:none;' +
+      'background:radial-gradient(120% 95% at 50% 40%, rgba(0,0,0,0) 55%, rgba(60,45,25,0.18) 100%);';
+    overlay.appendChild(vignette);
     this.overlay = overlay;
 
     // ---- the four era artworks, one per corner, fading toward the center.
@@ -86,7 +95,7 @@ export class MainMenu {
     statue.draggable = false;
     statue.style.cssText =
       'height:min(30vh, 34vw);width:auto;object-fit:contain;' +
-      'filter:drop-shadow(0 calc(var(--u) * 18) calc(var(--u) * 30) rgba(0,0,0,0.85));';
+      'filter:drop-shadow(0 calc(var(--u) * 12) calc(var(--u) * 22) rgba(60, 45, 25, 0.45));';
 
     // Temple front: columns flank the carved title over a stepped stylobate.
     const temple = document.createElement('div');
@@ -107,9 +116,8 @@ export class MainMenu {
     title.style.cssText =
       'font-weight:700;font-size:clamp(16px, 2.76vw, 35px);letter-spacing:0.32em;text-indent:0.32em;' +
       'text-align:center;white-space:nowrap;' +
-      'background:linear-gradient(180deg, #efe6cc 0%, #cbbc95 45%, #8f8262 80%, #b0a37e 100%);' +
-      '-webkit-background-clip:text;background-clip:text;color:transparent;' +
-      'text-shadow:0 calc(var(--u) * 2) calc(var(--u) * 4) rgba(0,0,0,0.55);';
+      'background:linear-gradient(180deg, #4f432e 0%, #6b5c40 45%, #8a7a58 80%, #5b4f38 100%);' +
+      '-webkit-background-clip:text;background-clip:text;color:transparent;';
     // Stepped stylobate under the name — three narrowing stone lines.
     const steps = document.createElement('div');
     steps.style.cssText =
