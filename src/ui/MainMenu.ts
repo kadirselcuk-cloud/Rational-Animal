@@ -16,8 +16,8 @@ import { SAVE_SLOTS, readSlot, requestLoad, slotSummary, type SaveSlot } from '.
 // stonework reads as ENGRAVED into the marble — darker browns with a pale
 // chisel highlight — while the buttons stay dark bronze plaques for contrast.
 const GOLD = '#d8c79a';
-const STONE = '#77694c';
-const DIM = '#5b4f38';
+const STONE = '#5a4e35';
+const DIM = '#42392a';
 
 /** A small Doric column, drawn inline so it can flank the title. */
 function columnSvg(height: number): string {
@@ -95,7 +95,7 @@ export class MainMenu {
     statue.draggable = false;
     statue.style.cssText =
       'height:min(30vh, 34vw);width:auto;object-fit:contain;' +
-      'filter:drop-shadow(0 calc(var(--u) * 12) calc(var(--u) * 22) rgba(60, 45, 25, 0.45));';
+      'filter:drop-shadow(calc(var(--u) * 6) calc(var(--u) * 12) calc(var(--u) * 16) rgba(45, 33, 18, 0.55));';
 
     // Temple front: columns flank the carved title over a stepped stylobate.
     const temple = document.createElement('div');
@@ -116,7 +116,7 @@ export class MainMenu {
     title.style.cssText =
       'font-weight:700;font-size:clamp(16px, 2.76vw, 35px);letter-spacing:0.32em;text-indent:0.32em;' +
       'text-align:center;white-space:nowrap;' +
-      'background:linear-gradient(180deg, #4f432e 0%, #6b5c40 45%, #8a7a58 80%, #5b4f38 100%);' +
+      'background:linear-gradient(180deg, #362d1d 0%, #52462e 45%, #6b5c40 80%, #3f3624 100%);' +
       '-webkit-background-clip:text;background-clip:text;color:transparent;';
     // Stepped stylobate under the name — three narrowing stone lines.
     const steps = document.createElement('div');
